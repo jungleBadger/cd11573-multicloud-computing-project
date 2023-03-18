@@ -179,11 +179,11 @@ resource "aws_ecs_task_definition" "udacity_app" {
     "environment": [
       {
         "name": "AZURE_SQL_SERVER",
-        "value": "udacity-tscotto-azure-sql"
+        "value": "udacity-jungle-sql-server"
       },
       {
         "name": "AZURE_DOTNET_APP",
-        "value": "udacity-tscotto-azure-dotnet-app"
+        "value": "udacity-jungle-azure-dotnet-app"
       }
     ],
     "portMappings": [
@@ -204,3 +204,39 @@ variable "app_count" {
 
 ####### Your Additions Will Start Here ######
 
+resource "aws_s3_bucket" "example" {
+  bucket = "udacity-jungle-bucket"
+
+  tags = {
+    Name        = "My bucket"
+    Environment = "Dev"
+  }
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  bucket = aws_s3_bucket.example.id
+  acl    = "private"
+}
+
+resource "aws_dynamodb_table" "basic-dynamodb-table" {
+  name           = "UdacityJungleTable"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 20
+  write_capacity = 20
+  hash_key       = "UniqueId"
+
+  attribute {
+    name = "UniqueId"
+    type = "S"
+  }
+
+  ttl {
+    attribute_name = "TimeToExist"
+    enabled        = false
+  }
+
+  tags = {
+    Name        = "udacity-jungle-table"
+    Environment = "production"
+  }
+}
